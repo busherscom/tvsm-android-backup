@@ -1,43 +1,35 @@
-package ms.appcenter.sampleapp.android;
+package ms.appcenter.sampleapp.android
 
-import android.app.Dialog;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.app.Dialog
+import android.content.DialogInterface
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
-public class CrashesActivity extends Fragment {
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.crashes_root, container, false);
-
-        Button crashButton = rootView.findViewById(R.id.crashButton);
-        crashButton.setOnClickListener(view -> {
-            DialogFragment crashDialog = new CrashDialog();
-            crashDialog.show(getFragmentManager(), "crashDialog");
-        });
-
-        return rootView;
+class CrashesActivity : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        val rootView = inflater.inflate(
+                R.layout.crashes_root, container, false) as ViewGroup
+        val crashButton = rootView.findViewById<Button>(R.id.crashButton)
+        crashButton.setOnClickListener {
+            val crashDialog: DialogFragment = CrashDialog()
+            crashDialog.show(fragmentManager!!, "crashDialog")
+        }
+        return rootView
     }
 
-    public static class CrashDialog extends DialogFragment {
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    class CrashDialog : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(activity!!)
             builder.setMessage("A crash report will be sent when you reopen the app.")
-                    .setPositiveButton("Crash app", (dialog, id) -> {
-                        throw new RuntimeException("crashing");
-                    }).setNegativeButton("Cancel", (dialog, id) -> {
-                // Add any code you'd like to execute when users click "Cancel"
-            });
-            return builder.create();
+                    .setPositiveButton("Crash app") { _: DialogInterface?, _: Int -> throw RuntimeException("crashing") }.setNegativeButton("Cancel") { _: DialogInterface?, _: Int -> }
+            return builder.create()
         }
     }
 }
